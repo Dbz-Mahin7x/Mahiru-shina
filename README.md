@@ -40,26 +40,27 @@
 ## 🧬 My Skills Progress
 
 <p align="left">
-  <b>JavaScript</b> <br/>
-  <img src="https://progress-bar.dev/90/?title=JavaScript&color=29a19c"><br/>
+  <b>JavaScript</b><br/>
+  <img src="https://img.shields.io/badge/JavaScript-90%25-29a19c?style=for-the-badge" /><br/>
 
-  <b>Node.js</b> <br/>
-  <img src="https://progress-bar.dev/88/?title=Node.js&color=2bbc8a"><br/>
+  <b>Node.js</b><br/>
+  <img src="https://img.shields.io/badge/Node.js-88%25-2bbc8a?style=for-the-badge" /><br/>
 
-  <b>React</b> <br/>
-  <img src="https://progress-bar.dev/70/?title=React&color=f7df1e"><br/>
+  <b>React</b><br/>
+  <img src="https://img.shields.io/badge/React-70%25-f7df1e?style=for-the-badge" /><br/>
 
-  <b>GoatBot Command Power</b> <br/>
-  <img src="https://progress-bar.dev/100/?title=🔥&color=ff69b4">
+  <b>GoatBot Command Power</b><br/>
+  <img src="https://img.shields.io/badge/🔥GoatBot-100%25-ff69b4?style=for-the-badge" />
 </p>
 
 ---
 
+
 ## 💫 GitHub Stats
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=mahin-node&show_icons=true&theme=radical" height="180"/>
-  <img src="https://github-readme-streak-stats.herokuapp.com?user=mahin-node&theme=tokyonight" height="180"/>
+  <img height="180em" src="https://github-readme-stats.vercel.app/api?username=Dbz-Mahin7x&show_icons=true&theme=radical&count_private=true&include_all_commits=true" />
+  <img height="180em" src="https://github-readme-streak-stats.herokuapp.com/?user=YOUR_UShttps://github-readme-streak-stats.herokuapp.com/user=Dbz-Mahin7x&theme=tokyonightERNAME&theme=tokyonight" />
 </p>
 
 ---
@@ -67,31 +68,33 @@
 ## 🏆 GitHub Trophies
 
 <p align="center">
-  <img src="https://github-profile-trophy.vercel.app/?username=mahin-node&theme=gruvbox&no-frame=true&row=1&column=7"/>
+  <img src="https://github-profile-trophy.vercel.app/?username=Dbz-Mahin7x&theme=gruvbox&no-frame=true&row=1&column=7" />
 </p>
 
----
 
-## 🔮 Top Languages
 
-<p align="center">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=mahin-node&layout=compact&theme=onedark"/>
-</p>
+#
 
----
+<br clear="both">
 
-## 🐍 Snake Game Contribution Graph
+<img src="https://raw.githubusercontent.com/nazrul4x/nazrul4x/output/snake.svg" alt="Snake animation" />
+## 🛠️ Technologies & Tools
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/mahin-node/mahin-node/output/snake.svg" alt="Snake animation" />
-</p>
+![](https://img.shields.io/badge/OS-Linux-informational?style=flat&logo=linux&logoColor=white&color=2bbc8a)
+![](https://img.shields.io/badge/OS-Windows-informational?style=flat&logo=windows&logoColor=white&color=2bbc8a)
+![](https://img.shields.io/badge/Editor-VSCode-informational?style=flat&logo=visual-studio-code&logoColor=white&color=2bbc8a)
+![](https://img.shields.io/badge/Code-JavaScript-informational?style=flat&logo=javascript&logoColor=white&color=2bbc8a)
+![](https://img.shields.io/badge/Code-PHP-informational?style=flat&logo=php&logoColor=white&color=2bbc8a)
+![](https://img.shields.io/badge/Code-Node.js-informational?style=flat&logo=node.js&logoColor=white&color=2bbc8a)
+![](https://img.shields.io/badge/Code-React-informational?style=flat&logo=react&logoColor=white&color=2bbc8a)
+![](https://img.shields.io/badge/Shell-Bash-informational?style=flat&logo=gnu-bash&logoColor=white&color=2bbc8a)
+![](https://img.shields.io/badge/Tools-Git-informational?style=flat&logo=git&logoColor=white&color=2bbc8a)
 
----
 
-## 🎮 What I'm Up To
+# What i Want to do 
 
-```text
-🎧 Listening to: Lofi & anime OPs  
-💡 Building: MidJourney-style AI commands  
-🐐 Improving: GoatBot with sexier commands  
-🔥 Dreaming of: Fame, freedom & frontend 🔥
+💝 𝐁𝐮𝐢𝐥𝐝𝐢𝐧𝐠: 𝐌𝐢𝐝𝐣𝐨𝐮𝐫𝐧𝐫𝐲-𝐒𝐭𝐲𝐥𝐞 𝐀𝐢 𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬  ✨
+🐐 𝐈𝐦𝐩𝐫𝐨𝐯𝐢𝐧𝐠: 𝐆𝐨𝐚𝐭𝐛𝐨𝐭 𝐖𝐢𝐭𝐡 𝐬𝐞𝐱𝐲 𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬🫶
+🔥 𝐃𝐫𝐞𝐚𝐦𝐢𝐧𝐠 𝐨𝐟 of:𝐅𝐚𝐦𝐞 𝐅𝐫𝐞𝐞𝐝𝐨𝐦 𝐚𝐧𝐝 𝐌𝐨𝐧𝐞𝐲 🔥
+
+      
