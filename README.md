@@ -9,26 +9,6 @@
 
 ---
 
-## 🧸 About Me
-
-- 🍷🌸 15 y.o. self-taught developer from Japan  
-- 🔥 I breathe JavaScript, Node.js, and TypeScript  
-- 🐐 Famous for my stylish GoatBot commands  
-- 🎨 Building APIs, tools, and fullstack stuff  
-- 💖 I code at 3 AM, dreaming of success & spicy design  
-- 🎀 Goal: Be a millionaire dev & rep 🇯🇵 loud  
-
----
-
-## 💞 Why You Should Follow Me
-
-- I bring passion & flair to every line of code 💘  
-- My bots are as smooth and sexy as our late-night talks 😏  
-- I never stop hustling — success is my only option 🚀  
-- Wanna collab or just vibe? Hit me up, I’m all ears 👂  
-
----
-
 ## 🛠️ My Tech Stack
 
 <p align="center">
@@ -175,6 +155,24 @@ $ booting MahinOS...
 
 </div>
 
+## 🧸About Me
+- 🍷🌸 15 y.o. self-taught developer from Japan  
+- 🔥 I breathe JavaScript, Node.js, and TypeScript  
+- 🐐 Famous for my stylish GoatBot commands  
+- 🎨 Building APIs, tools, and fullstack stuff  
+- 💖 I code at 3 AM, dreaming of success & spicy design  
+- 🎀 Goal: Be a millionaire dev & rep 🇯🇵 loud  
+
+---
+
+## 💞 Why You Should Follow Me
+
+- I bring passion & flair to every line of code 💘  
+- My bots are as smooth and sexy as our late-night talks 😏  
+- I never stop hustling — success is my only option 🚀  
+- Wanna collab or just vibe? Hit me up, I’m all ears 👂  
+
+---
 
 # What i Want to do 
 
