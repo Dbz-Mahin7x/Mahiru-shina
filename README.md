@@ -82,7 +82,7 @@
 
   <div style="margin-top: 20px;">
     <a href="https://github.com/Dbz-Mahin7x" style="background: #ff66cc; color: white; padding: 10px 20px; border-radius: 10px; text-decoration: none; margin-right: 10px; box-shadow: 0 0 10px #ff66cc;">💻 View My Code</a>
-    <a href="https://t.me/your-username" style="background: #00ffff; color: black; padding: 10px 20px; border-radius: 10px; text-decoration: none; box-shadow: 0 0 10px #00ffff;">💌 Message Me</a>
+    <a href="https://www.facebook.com/RentaroAijo.7x" style="background: #00ffff; color: black; padding: 10px 20px; border-radius: 10px; text-decoration: none; box-shadow: 0 0 10px #00ffff;">💌 Message Me</a>
   </div>
 
   <p style="color: #ffb3ec; margin-top: 20px; font-size: 16px;">Assistant v1.0 – coded by Mahin, kissed by AI 💋</p>
