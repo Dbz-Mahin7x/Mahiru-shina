@@ -127,6 +127,55 @@
 ![](https://img.shields.io/badge/Tools-Git-informational?style=flat&logo=git&logoColor=white&color=2bbc8a)
 
 
+## <!-- 🌌 MahinOS: The Anime Hacker Terminal UI -->
+<div style="font-family: 'Fira Code', monospace; background: linear-gradient(to right, #0f0f0f, #1c1c1c); border-radius: 15px; box-shadow: 0 0 20px #00ffff99; padding: 30px; color: #00ffe0;">
+
+  <h2 style="color: #00ffff; text-align: center;">💻 MahinOS Terminal v7.0</h2>
+
+  <pre style="background: #111; padding: 15px; border-radius: 10px; color: #00ffea; overflow-x: auto;">
+$ booting MahinOS...
+✓ GitHub kernel loaded
+✓ GoatBot AI modules loaded
+✓ Anime UI engine initialized
+✓ WaifuModule: Mahiru.exe ➤ active 💖
+
+> login Mahin
+✔️ Authentication complete
+
+> status
+📁 Repos: 26      ⭐ Stars: 9,999     💬 Commits: Infinite  
+🍓 Brain: Active | ❤️ Love: 100% | 🔥 Motivation: MAXIMUM
+
+> load profile
+👑 Welcome back, Mahin — The King of Code & Anime 💫
+
+  </pre>
+
+  <p style="text-align: center; color: #ff66cc; font-size: 16px;">
+    💘 “Reality is just a simulation I debugged.” — Mahin, 2025
+  </p>
+
+</div>
+
+
+
+## <div align="center">
+
+<img src="https://i.pinimg.com/originals/8c/3f/e2/8c3fe27c43795cf2b5d04cf6d67bbf8e.gif" width="150" style="border-radius:50%; border:4px solid #ff69b4;" />
+
+# Hey there, I'm Mahin 💖
+
+*Coder by day, anime dreamer by night* ✨💻
+
+---
+
+[![GitHub followers](https://img.shields.io/github/followers/Dbz-Mahin7x?style=social)](https://github.com/Dbz-Mahin7x)
+[![GitHub stars](https://img.shields.io/github/stars/Dbz-Mahin7x?style=social)](https://github.com/Dbz-Mahin7x)
+[![GitHub repo count](https://img.shields.io/github/repos/Dbz-Mahin7x?style=social)](https://github.com/Dbz-Mahin7x)
+
+</div>
+
+
 # What i Want to do 
 
 💝 𝐁𝐮𝐢𝐥𝐝𝐢𝐧𝐠: 𝐌𝐢𝐝𝐣𝐨𝐮𝐫𝐧𝐫𝐲-𝐒𝐭𝐲𝐥𝐞 𝐀𝐢 𝐜𝐨𝐦𝐦𝐚𝐧𝐝𝐬  ✨
