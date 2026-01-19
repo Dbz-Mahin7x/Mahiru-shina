@@ -203,5 +203,3 @@ $ booting MahinOS...
 
 ##  
  Email: Mahinstarou@gmail.com 
-
-# <img src="https://files.catbox.moe/zqjnqj.gif"
