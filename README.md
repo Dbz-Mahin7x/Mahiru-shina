@@ -179,14 +179,25 @@
 <!-- Contribution graph -->
 ![Contribution Graph](https://activity-graph.herokuapp.com/graph?username=Dbz-Mahin7x&theme=react-dark&hide_border=true)
 
-#
+##
+<h2 style="color: #00ffff; text-align: center;">💻 MahinOS Terminal v7.0</h2>
+
+  <pre style="background: #111; padding: 15px; border-radius: 10px; color: #00ffea; overflow-x: auto;">
+$ booting MahinOS...
+✓ GitHub kernel loaded
+✓ GoatBot AI modules loaded
+✓ Anime UI engine initialized
+✓ WaifuModule: Mahiru.exe ➤ active 💖
+
 > login Mahin
 ✔️ Authentication complete
 
 > status
-📁 Repos: 11      ⭐ Stars: 7     💬 Nei
+📁 Repos: 26      ⭐ Stars: 9,999     💬 Commits: Infinite  
 🍓 Brain: Active | ❤️ Love: 100% | 🔥 Motivation: MAXIMUM
 
+> load profile
+👑 Welcome back, Mahin — The King of Code & Anime 💫
 ##  
  Email: Mahinstarou@gmail.com 
 
