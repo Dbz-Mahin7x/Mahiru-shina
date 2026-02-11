@@ -1,6 +1,4 @@
-<%~ includeFile("partials/header.eta", {
-	user: user
-}); %>
+<%~ includeFile("partials/header.eta", { user: user }); %>
 <%~ includeFile("partials/message.eta"); %>
 <%~ includeFile("partials/title.eta", {
 	icon: "fas fa-cog",
@@ -15,7 +13,7 @@
 
 <div class="container">
 
-  <h3>Danh sách nhóm mà bạn quản lý</h3>
+  <h3>List of Groups You Manage</h3>
 
   <div class="d-sm-flex d-block align-items-center my-3">
     <div class="search-box me-2">
@@ -24,7 +22,7 @@
     </div>
     <div class="d-flex">
       <select class="form-select w-auto me-2 mt-2 mt-sm-0" id="searchBy" aria-label="Search By">
-        <option value="thread_id" selected="selected">Box Id</option>
+        <option value="thread_id" selected="selected">Box ID</option>
         <option value="thread_name">Box Name</option>
       </select>
       <button class="btn btn-phoenix-primary text-nowrap mt-2 mt-sm-0" id="reset-button">
@@ -38,16 +36,15 @@
     <table class="table table-bordered table-striped align-middle">
       <thead>
         <tr>
-          <th></th>
+          <th>#</th>
           <th class="sort" data-sort="thread_id">Box ID</th>
           <th class="sort" data-sort="thread_name">Box Name</th>
           <th class="sort" data-sort="members">Members</th>
           <th>Action</th>
         </tr>
       </thead>
-
       <tbody class="list">
-        <% for (let i=0; i < threads.length; i++) { %>
+        <% for (let i = 0; i < threads.length; i++) { %>
         <tr>
           <td class="ps-2">
             <%= i + 1 %>
@@ -59,10 +56,14 @@
             <%= threads[i].threadName || "null" %>
           </td>
           <td class="members">
-            <%= threads[i].members.filter(m=> m.inGroup).length %>
+            <% if (Array.isArray(threads[i].members)) { %>
+              <%= threads[i].members.filter(m => m.inGroup).length %>
+            <% } else { %>
+              0
+            <% } %>
           </td>
           <td>
-            <a href='/dashboard/<%=threads[i].threadID %>' class='btn btn-phoenix-primary'>
+            <a href="/dashboard/<%= threads[i].threadID %>" class="btn btn-phoenix-primary">
               <i class="fa-solid fa-wrench"></i>
             </a>
           </td>
@@ -86,7 +87,7 @@
     const searchInput = $("#search-input");
     const searchBy = $("#searchBy");
 
-    $("#search-input, #searchBy").on("keyup change paste", function(e) {
+    $("#search-input, #searchBy").on("keyup change paste", function () {
       const searchValue = searchInput.val();
       const searchByValue = searchBy.val();
       if (searchByValue)
@@ -95,10 +96,12 @@
         listThread.search();
     });
 
-    resetButton.on("click", function(e) {
+    resetButton.on("click", function () {
       searchInput.val("");
       listThread.search();
     });
   </script>
 
-  <%~ includeFile("partials/footer.eta") %>
+</div>
+
+<%~ includeFile("partials/footer.eta"); %>

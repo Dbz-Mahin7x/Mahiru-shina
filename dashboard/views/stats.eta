@@ -4,7 +4,7 @@
 <%~ includeFile("partials/message.eta"); %>
 <%~ includeFile("partials/title.eta", {
 	icon: "fas fa-robot",
-	title: "Bot stats"
+	title: "Bot Stats"
 }); %>
 
 <section class="post my-4">
@@ -42,19 +42,19 @@
           </td>
         </tr>
         <tr class="text-start">
-          <td><i class="fa-solid fa-memory"></i> Memory</td>
+          <td><i class="fa-solid fa-memory"></i> Memory Usage</td>
           <td>
 						<%= (process.memoryUsage().rss / 1024 / 1024).toFixed(2) %> MB
           </td>
         </tr>
 				<tr class="text-start">
-					<td style="font-size: 15px;"><i class="fa-solid fa-memory"></i> CPU</td>
+					<td style="font-size: 15px;"><i class="fa-solid fa-microchip"></i> CPU Usage</td>
 					<td style="font-size: 15px;">
 						<%= (process.cpuUsage().system / 1024 / 1024).toFixed(2) %>%
 					</td>
 				</tr>
 				<tr class="text-start">
-					<td style="font-size: 15px;"><i class="fa-solid fa-memory"></i> Node CPU</td>
+					<td style="font-size: 15px;"><i class="fa-solid fa-microchip"></i> Node CPU</td>
 					<td style="font-size: 15px;">
 						<%= (process.cpuUsage().user / 1024 / 1024).toFixed(2) %>%
 					</td>
@@ -65,7 +65,21 @@
 </section>
 
 <script type="text/javascript">
-  function cvt(e,t="giây",o="phút ",n="giờ ",r="ngày ",a="tháng ",c="năm "){const u=Math.floor(e/1e3%60),i=Math.floor(e/1e3/60%60),l=Math.floor(e/1e3/60/60%24),f=Math.floor(e/1e3/60/60/24%30),h=Math.floor(e/1e3/60/60/24/30%12),m=Math.floor(e/1e3/60/60/24/30/12);return`${m?m+c:""}${h?h+a:m?"00"+a:""}${f?f+r:h||m?"00"+r:""}${l?l+n:f||h||m?"00"+n:""}${i?i+o:l||f||h||m?"00"+o:""}${u}${t}`}let countDownDate=Number("<%=uptimeSecond%>");setInterval((function(){countDownDate+=1,document.getElementById("uptime").innerHTML=cvt(1e3*countDownDate)}),1e3);
+  function formatUptime(ms, sec="seconds", min="minutes ", hour="hours ", day="days ", month="months ", year="years ") {
+    const s = Math.floor(ms / 1000 % 60),
+          m = Math.floor(ms / 1000 / 60 % 60),
+          h = Math.floor(ms / 1000 / 60 / 60 % 24),
+          d = Math.floor(ms / 1000 / 60 / 60 / 24 % 30),
+          mo = Math.floor(ms / 1000 / 60 / 60 / 24 / 30 % 12),
+          y = Math.floor(ms / 1000 / 60 / 60 / 24 / 30 / 12);
+    return `${y ? y + year : ""}${mo ? mo + month : y ? "00" + month : ""}${d ? d + day : mo || y ? "00" + day : ""}${h ? h + hour : d || mo || y ? "00" + hour : ""}${m ? m + min : h || d || mo || y ? "00" + min : ""}${s} ${sec}`;
+  }
+
+  let uptimeInSeconds = Number("<%=uptimeSecond%>");
+  setInterval(function() {
+    uptimeInSeconds += 1;
+    document.getElementById("uptime").innerHTML = formatUptime(uptimeInSeconds * 1000);
+  }, 1000);
 </script>
 
 <%~ includeFile("partials/footer") %>

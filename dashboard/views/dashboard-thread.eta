@@ -33,7 +33,7 @@
 				</label>
 			</div>
 		</div>
-		<p class="text-700 lead fs-1 ms-2 mb-0">Gửi tin nhắn chào mừng thành viên mới!</p>
+		<p class="text-700 lead fs-1 ms-2 mb-0">Send a welcome message to new members!</p>
 	</div>
 
 	<div class="bg-300 rounded-5 py-4 px-4 mt-2" role="button" onclick="window.location.href='/dashboard/<%= threadID %>/leave'">
@@ -50,7 +50,7 @@
 				</label>
 			</div>
 		</div>
-		<p class="text-700 lead fs-1 ms-2 mb-0">Gửi tin nhắn tạm biệt thành viên rời khỏi nhóm!</p>
+		<p class="text-700 lead fs-1 ms-2 mb-0">Send a goodbye message when members leave the group!</p>
 	</div>
 
 	<div class="bg-300 rounded-5 py-4 px-4 mt-2" role="button" onclick="window.location.href='/dashboard/<%= threadID %>/rankup'">
@@ -67,7 +67,7 @@
 				</label>
 			</div>
 		</div>
-		<p class="text-700 lead fs-1 ms-2 mb-0">Gửi tin nhắn thông báo thăng cấp!</p>
+		<p class="text-700 lead fs-1 ms-2 mb-0">Send notifications for rank upgrades!</p>
 	</div>
 
 	<div class="bg-300 rounded-5 py-4 px-4 mt-2" role="button" onclick="window.location.href='/dashboard/<%= threadID %>/custom-cmd'">
@@ -84,11 +84,21 @@
 				</label>
 			</div>
 		</div>
-		<p class="text-700 lead fs-1 ms-2 mb-0">Tùy chỉnh lệnh của bot!</p>
+		<p class="text-700 lead fs-1 ms-2 mb-0">Customize bot commands!</p>
 	</div>
 
+<div class="bg-300 rounded-5 py-4 px-4 mt-4" id="leave-group-btn" role="button" style="cursor:pointer;">
+  <div class="row justify-content-between">
+    <div class="col-auto">
+      <h4>😥 Leave Group</h4>
+    </div>
+  </div>
+  <p class="text-700 lead fs-1 ms-2 mb-0">Click here to make the bot leave this group.</p>
+</div>
+
+
 	<input type="hidden" name="threadID" value="<%= threadID %>">
-	<button type="submit" id="save" class="mt-2 btn btn-primary btn-block" <%=authConfigDashboard ? '' : 'disabled'%>>Lưu</button>
+	<button type="submit" id="save" class="mt-2 btn btn-primary btn-block" <%=authConfigDashboard ? '' : 'disabled'%>>Save</button>
 
 </form>
 
@@ -97,7 +107,7 @@
     const btn = $("#save");
     btn.on("click", function(e) {
       e.preventDefault();
-      '<% if (authConfigDashboard) { %>'
+      <% if (authConfigDashboard) { %>
       $.ajax({
         url: "/api/thread/setData/settings",
         type: "POST",
@@ -114,31 +124,59 @@
           $.createToast({
             title: "Success",
             type: "success",
-            message: "Cập nhật thành công!"
-          })
+            message: "Updated successfully!"
+          });
         },
         error: function(err) {
           $.createToast({
-            title: "Lỗi",
+            title: "Error",
             type: "error",
-            message: "Đã xảy ra lỗi!"
-          })
+            message: "An error occurred!"
+          });
         }
       });
-      '<% } else { %>'
-      e.preventDefault();
+      <% } else { %>
       $.createToast({
-        title: "Warnig",
-        message: "[!] Chỉ quản trị viên của nhóm chat hoặc những thành viên được cho phép mới có thể chỉnh sửa dashboard",
+        title: "Warning",
+        message: "[!] Only group admins or authorized members can edit the dashboard",
         type: "warning",
-      })
-      '<% } %>'
+      });
+      <% } %>
+    });
+
+    // Prevent navigation when clicking on checkboxes
+    $("[type='checkbox']").on("click", function(e) {
+      e.stopPropagation();
+    });
+
+    // Leave Group button event
+    document.getElementById("leave-group-btn").addEventListener("click", function(e) {
+      e.preventDefault();
+      if (confirm("Are you sure you want the bot to leave this group?")) {
+        $.ajax({
+          url: "/api/thread/leave-group",
+          method: "POST",
+          data: { threadID: "<%= threadID %>" },
+          success: function(response) {
+            $.createToast({
+              title: "Success",
+              type: "success",
+              message: "The bot has left the group."
+            });
+            setTimeout(() => {
+              window.location.href = "/dashboard";
+            }, 1500);
+          },
+          error: function(err) {
+            $.createToast({
+              title: "Error",
+              type: "error",
+              message: "Failed to leave the group."
+            });
+          }
+        });
+      }
     });
   })();
-
-	// kiểm tra nếu click vào input thì không chuyển trang
-	$("[type='checkbox']").on("click", function(e) {
-		e.stopPropagation();
-	});
 </script>
 <%~ includeFile("partials/footer.eta") %>

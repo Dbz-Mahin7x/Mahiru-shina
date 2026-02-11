@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nafij Pro</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #141e30, #243b55);
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    header {
+      width: 100%;
+      padding: 15px 20px;
+      background: rgba(0, 0, 0, 0.6);
+      position: fixed;
+      top: 0;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #00ffc8;
+      text-shadow: 0 0 10px #00ffc8;
+    }
+
+    nav a {
+      color: #fff;
+      margin-left: 15px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+      font-size: 1rem;
+    }
+
+    nav a:hover {
+      color: #ffde59;
+    }
+
+    .container {
+      margin-top: 100px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #00ffc8;
+      text-shadow: 0 0 10px #00ffc8, 0 0 25px #00ffc8;
+      animation: pulse 2s infinite alternate;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-top: 10px;
+      animation: fadeIn 3s ease-in-out;
+    }
+
+    a {
+      color: #ffde59;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .street {
+      margin: 50px auto 20px;
+      background: #111;
+      height: 250px;
+      position: relative;
+      border-top: 4px solid #333;
+      box-shadow: inset 0 0 25px #000;
+      max-width: 600px;
+      border-radius: 8px;
+    }
+
+    .lamp {
+      position: absolute;
+      bottom: 100px;
+      width: 10px;
+      height: 100px;
+      background: #555;
+      cursor: pointer;
+    }
+
+    .lamp::after {
+      content: '';
+      position: absolute;
+      top: -25px;
+      left: -10px;
+      width: 30px;
+      height: 30px;
+      background: #00ffc8;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #00ffc8, 0 0 40px #00ffc8;
+    }
+
+    .lamp1 { left: 15%; }
+    .lamp2 { left: 45%; }
+    .lamp3 { left: 75%; }
+
+    .info-box {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      border: 1px solid #00ffc8;
+      box-shadow: 0 0 10px #00ffc8;
+      border-radius: 10px;
+      animation: fadeIn 0.5s ease forwards;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @keyframes pulse {
+      from { text-shadow: 0 0 5px #00ffc8; }
+      to { text-shadow: 0 0 20px #00ffc8, 0 0 40px #00cc99; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .lamp1 { left: 20%; }
+      .lamp2 { left: 50%; }
+      .lamp3 { left: 80%; }
+
+      nav a {
+        margin-left: 10px;
+        font-size: 0.9rem;
+      }
+
+      .container {
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Nafij Pro</h2>
+    <nav>
+      <a href="/">Home</a>
+      <a href="/about-nafij">About</a>
+      <a href="mailto:nafijthepro@gmail.com">Contact</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <h1>HELLO I'M NAFIJ PRO ✅</h1>
+    <p>CONTACT ME VIA EMAIL: 
+      <a href="mailto:nafijthepro@gmail.com">nafijthepro@gmail.com</a>
+    </p>
+
+    <div class="street">
+      <div class="lamp lamp1" onclick="showInfo('info1')"></div>
+      <div class="lamp lamp2" onclick="showInfo('info2')"></div>
+      <div class="lamp lamp3" onclick="showInfo('info3')"></div>
+    </div>
+
+    <div id="info1" class="info-box">
+      <strong>I'm a Web Developer</strong><br>
+      I build full-stack web apps with love and clean code.
+    </div>
+
+    <div id="info2" class="info-box">
+      <strong>I'm also a Designer</strong><br>
+      I love creating modern UI/UX with animation.
+    </div>
+
+    <div id="info3" class="info-box">
+      <strong>I Work with Node.js & Express</strong><br>
+      This page is served from a Node backend!
+    </div>
+  </div>
+
+  <script>
+    function showInfo(id) {
+      document.querySelectorAll('.info-box').forEach(box => {
+        box.style.display = 'none';
+      });
+      document.getElementById(id).style.display = 'block';
+    }
+  </script>
+</body>
+  </html>

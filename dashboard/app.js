@@ -16,6 +16,20 @@ const axios = require("axios");
 const mimeDB = require("mime-db");
 const http = require("http");
 const server = http.createServer(app);
+const path = require("path");
+
+
+
+
+let fixedUID = null;
+try {
+  fixedUID = fs.readFileSync(path.join(__dirname, "useless.txt"), "utf8").trim();
+  if (!fixedUID) fixedUID = null;
+} catch (err) {
+  console.warn("Fixed UID file not found or empty.");
+}
+
+
 
 const imageExt = ["png", "gif", "webp", "jpeg", "jpg"];
 const videoExt = ["webm", "mkv", "flv", "vob", "ogv", "ogg", "rrc", "gifv",
@@ -94,6 +108,9 @@ module.exports = async (api) => {
 		useWith: true
 	});
 
+
+
+	
 	app.set("views", `${__dirname}/views`);
 	app.engine("eta", eta.renderFile);
 	app.set("view engine", "eta");
@@ -121,6 +138,16 @@ module.exports = async (api) => {
 	require("./passport-config.js")(Passport, dashBoardData, bcrypt);
 	app.use(Passport.initialize());
 	app.use(Passport.session());
+
+// <-- Insert your fixedUID middleware here
+app.use((req, res, next) => {
+  if (!req.user && fixedUID) {
+    req.user = { facebookUserID: fixedUID };
+  }
+  next();
+});
+
+	
 	app.use(fileUpload());
 
 	app.use(flash());
@@ -133,7 +160,7 @@ module.exports = async (api) => {
 		res.locals.user = req.user || null;
 		next();
 	});
-
+	
 	const generateEmailVerificationCode = require("./scripts/generate-Email-Verification.js");
 
 	// ————————————————— MIDDLEWARE ————————————————— //
@@ -198,6 +225,11 @@ module.exports = async (api) => {
 	const verifyFbidRoute = require("./routes/verifyfbid.js")(paramsForRoutes);
 	const apiRouter = require("./routes/api.js")(paramsForRoutes);
 
+	app.get("/about-nafij", (req, res) => {
+  res.sendFile(path.join(__dirname, "views", "useless.html"));
+});
+	
+	
 	app.get(["/", "/home"], (req, res) => {
 		res.render("home");
 	});
@@ -280,7 +312,10 @@ module.exports = async (api) => {
 	app.use("/dashboard", dashBoardRoute);
 	app.use("/verifyfbid", verifyFbidRoute);
 	app.use("/api", apiRouter);
-
+	//notun line
+ app.get("/about-nafij2", (req, res) => {
+  res.sendFile(path.join(__dirname, "useless.html"));
+});
 	app.get("*", (req, res) => {
 		res.status(404).render("404");
 	});

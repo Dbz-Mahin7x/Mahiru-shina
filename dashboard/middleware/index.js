@@ -6,66 +6,28 @@ function isPostMethod(req) {
 
 module.exports = function (checkAuthConfigDashboardOfThread) {
 	return {
+		// Always allow access - skip login check
 		isAuthenticated(req, res, next) {
-			if (req.isAuthenticated())
-				return next();
-
-			if (isPostMethod(req))
-				return res.status(401).send({
-					status: "error",
-					error: "PERMISSION_DENIED",
-					message: "Bạn chưa đăng nhập"
-				});
-
-			req.flash("errors", { msg: "You must be logged in" });
-			res.redirect(`/login?redirect=${req.originalUrl}`);
+			return next();
 		},
 
+		// Always allow access - skip unauthenticated check
 		unAuthenticated(req, res, next) {
-			if (!req.isAuthenticated())
-				return next();
-
-			if (isPostMethod(req))
-				return res.status(401).send({
-					status: "error",
-					error: "PERMISSION_DENIED",
-					message: "Đã xảy ra lỗi"
-				});
-
-			res.redirect("/");
+			return next();
 		},
 
+		// Skip Facebook ID verification
 		isVeryfiUserIDFacebook(req, res, next) {
-			if (req.user.facebookUserID)
-				return next();
-
-			if (isPostMethod(req))
-				return res.status(401).send({
-					status: "error",
-					error: "PERMISSION_DENIED",
-					message: "Bạn chưa xác thực id Facebook"
-				});
-
-			req.flash("errors", { msg: "Bạn cần phải xác thực id facebook trước khi thực hiện hành động này" });
-			res.redirect(`/verifyfbid?redirect=${req.originalUrl}`);
+			return next();
 		},
 
+		// Skip waitVerifyAccount check
 		isWaitVerifyAccount(req, res, next) {
-			if (req.session.waitVerifyAccount)
-				return next();
-
-			if (isPostMethod(req))
-				return res.status(401).send({
-					status: "error",
-					error: "PERMISSION_DENIED",
-					message: "Đã xảy ra lỗi, vui lòng thử lại"
-				});
-
-			res.redirect("/register");
+			return next();
 		},
 
 		async checkHasAndInThread(req, res, next) {
-			const userID = req.user.facebookUserID;
+			const userID = req.user?.facebookUserID;
 			const threadID = isPostMethod(req) ? req.body.threadID : req.params.threadID;
 			const threadData = await threadsData.get(threadID);
 
@@ -81,7 +43,7 @@ module.exports = function (checkAuthConfigDashboardOfThread) {
 				return res.redirect("/dashboard");
 			}
 
-			const findMember = threadData.members.find(m => m.userID == userID && m.inGroup == true);
+			const findMember = threadData.members.find(m => m.userID == userID && m.inGroup === true);
 			if (!findMember) {
 				if (isPostMethod(req))
 					return res.status(401).send({
@@ -99,14 +61,14 @@ module.exports = function (checkAuthConfigDashboardOfThread) {
 
 		async middlewareCheckAuthConfigDashboardOfThread(req, res, next) {
 			const threadID = isPostMethod(req) ? req.body.threadID : req.params.threadID;
-			if (checkAuthConfigDashboardOfThread(threadID, req.user.facebookUserID))
+			if (checkAuthConfigDashboardOfThread(threadID, req.user?.facebookUserID))
 				return next();
 
 			if (isPostMethod(req))
 				return res.status(401).send({
 					status: "error",
 					error: "PERMISSION_DENIED",
-					message: "Bạn không có quyền chinh sửa nhóm này"
+					message: "Bạn không có quyền chỉnh sửa nhóm này"
 				});
 
 			req.flash("errors", {
@@ -116,7 +78,7 @@ module.exports = function (checkAuthConfigDashboardOfThread) {
 		},
 
 		async isAdmin(req, res, next) {
-			const userID = req.user.facebookUserID;
+			const userID = req.user?.facebookUserID;
 			if (!global.GoatBot.config.adminBot.includes(userID)) {
 				if (isPostMethod(req))
 					return res.status(401).send({
