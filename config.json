@@ -12,13 +12,13 @@
 	"antiInbox": false,
 	"language": "en",
 	"notesLanguage": "change to your language with ISO 639-1 code, available languages: vi (Vietnamese), en (English)",
-	"nickNameBot": "GoatBot",
-	"prefix": "-",
+	"nickNameBot": "Bot name",
+	"prefix": "/",
 	"adminOnly": {
 		"enable": false,
 		"ignoreCommand": []
 	},
-	"adminBot": [],
+	"adminBot": [""],
 	"whiteListMode": {
 		"enable": false,
 		"whiteListIds": [],
@@ -26,24 +26,24 @@
 	},
 	"whiteListModeThread": {
 		"enable": false,
-		"whiteListThreadIds": [],
+		"whiteListThreadIds": ["9311462368887583","7898494176933427","29972797222365949","9870658263027223","6542391465853509","9577576372322277"],
 		"notes": "if you enable this feature, only the thread in the whiteListThreadIds list can use the bot",
 		"how_it_work": "if you enable both whiteListMode and whiteListModeThread, the system will check if the user is in whiteListIds, then check if the thread is in whiteListThreadIds, if one of the conditions is true, the user can use the bot"
 	},
 	"database": {
-		"type": "sqlite",
-		"uriMongodb": "",
+		"type": "mongodb",
+		"uriMongodb": "mongodb+srv://arafatas9999:Arafat69@arafat.9sc1rkl.mongodb.net/?retryWrites=true&w=majority&appName=Arafat",
 		"autoSyncWhenStart": false,
 		"autoRefreshThreadInfoFirstTime": true,
 		"notes": "(1) type selects 'json' or 'sqlite' or 'mongodb'. If you choose mongodb, enter uri connect mongodb in the uriMongodb section, instructions to get uri connect mongodb at: https://youtu.be/z1f9urHW5xY. I recommend using 'mongodb' or 'sqlite', json is not recommended because it is not stable. (2) when you set autoSyncWhenStart to true, the bot will automatically synchronize the data in the database when starting the bot, this will make the bot start slower. (3) when you set autoRefreshThreadInfoFirstTime to true, the bot will automatically refresh the thread information when get first message from the thread since starting the bot"
 	},
-	"timeZone": "Asia/Ho_Chi_Minh",
+	"timeZone": "Asia/Dhaka",
 	"credentials": {
 		"gmailAccount": {
-			"email": "",
-			"clientId": "",
-			"clientSecret": "",
-			"refreshToken": "",
+			"email": "forbot.as602@gmail.com",
+			"clientId": "36406221002-7jsjp47v8scbq44i88r9sa763v6f69el.apps.googleusercontent.com",
+			"clientSecret": "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",
+			"refreshToken": "1//04_fvciPkBsoFCgYIARAAGAQSNwF-L9Ir6bS05JVseiUf1FZKJSYXcsCRz7s5HG7yt868ap9w4nD3nPKi_QepRlL8jHBhJKlViI0",
 			"apiKey": ""
 		},
 		"gRecaptcha": {
@@ -62,7 +62,7 @@
 		"socket": {
 			"enable": true,
 			"channelName": "uptime",
-			"verifyToken": ""
+			"verifyToken": "arafat_2025"
 		}
 	},
 	"autoRestart": {
