@@ -1,37 +1,46 @@
 const createFuncMessage = global.utils.message;
 const handlerCheckDB = require("./handlerCheckData.js");
+const fs = require("fs");
 
 module.exports = (api, threadModel, userModel, dashBoardModel, globalModel, usersData, threadsData, dashBoardData, globalData) => {
-	const handlerEvents = require(process.env.NODE_ENV == 'development' ? "./handlerEvents.dev.js" : "./handlerEvents.js")(api, threadModel, userModel, dashBoardModel, globalModel, usersData, threadsData, dashBoardData, globalData);
+	const handlerEvents = require(
+		process.env.NODE_ENV == "development"
+			? "./handlerEvents.dev.js"
+			: "./handlerEvents.js"
+	)(api, threadModel, userModel, dashBoardModel, globalModel, usersData, threadsData, dashBoardData, globalData);
 
 	return async function (event) {
-		// Anti-Inbox check
+		// 🔒 Anti-inbox check
 		if (
 			global.GoatBot.config.antiInbox == true &&
-			(event.senderID == event.threadID || event.userID == event.senderID || event.isGroup == false) &&
+			(event.senderID == event.threadID ||
+				event.userID == event.senderID ||
+				event.isGroup == false) &&
 			(event.senderID || event.userID || event.isGroup == false)
-		)
-			return;
+		) return;
 
+		// 🚫 Global ban check for threads
+		const banPath = __dirname + "/cmds/cache/thread-manage.json";
+		if (fs.existsSync(banPath)) {
+			const banData = JSON.parse(fs.readFileSync(banPath));
+			const isBanned = banData.banList.some(t => t.id === event.threadID);
+			if (isBanned) {
+				if (["message", "message_reply", "message_reaction", "event"].includes(event.type)) {
+					return api.sendMessage("🚫 This group is *banned* from using the bot!", event.threadID);
+				}
+				return; // silently block others
+			}
+		}
+
+		// 📨 Create message utils
 		const message = createFuncMessage(api, event);
 
-		// DB check/update
+		// 🔍 DB check
 		await handlerCheckDB(usersData, threadsData, event);
 
-		// Event handler load
+		// 🎯 Load event handlers
 		const handlerChat = await handlerEvents(event, message);
-		if (!handlerChat)
-			return;
-
-		// Approval system
-		if(global.GoatBot.config?.approval){
-			const approvedtid = await globalData.get("approved", "data", {});
-			if (!approvedtid.approved) {
-				approvedtid.approved = [];
-				await globalData.set("approved", approvedtid, "data");
-			}
-			if (!approvedtid.approved.includes(event.threadID)) return;
-		}
+		if (!handlerChat) return;
 
 		const {
 			onAnyEvent, onFirstChat, onStart, onChat,
@@ -39,9 +48,9 @@ module.exports = (api, threadModel, userModel, dashBoardModel, globalModel, user
 			typ, presence, read_receipt
 		} = handlerChat;
 
-		// run any event
 		onAnyEvent();
 
+		// ⚡ Main event switch
 		switch (event.type) {
 			case "message":
 			case "message_reply":
@@ -58,27 +67,17 @@ module.exports = (api, threadModel, userModel, dashBoardModel, globalModel, user
 				break;
 
 			case "message_reaction":
-				onReaction();
+				// ✅ Custom unsend logic (Everyone can use)
+				const allowedReactions = ["🚮", "😠", "😡", "🤬"]; // ইমোজি যেগুলোতে unsend হবে
 
-				const { delete: del, kick } = global.GoatBot.config?.reactBy || { delete: [], kick: [] };
-
-				// 🗑️ Delete message
-				if (del.includes(event.reaction)) {
+				// যদি বট নিজে রিঅ্যাক্ট করা মেসেজে allowed emoji থাকে → unsend করবে
+				if (allowedReactions.includes(event.reaction)) {
 					if (event.senderID === api.getCurrentUserID()) {
-						if (global.GoatBot.config?.vipuser?.includes(event.userID)) {
-							api.unsendMessage(event.messageID);
-						}
+						api.unsendMessage(event.messageID);
 					}
 				}
 
-				// 👟 Kick user
-				if (kick.includes(event.reaction)) {
-					if (global.GoatBot.config?.vipuser?.includes(event.userID)) {
-						api.removeUserFromGroup(event.senderID, event.threadID, (err) => { 
-							if (err) return console.log(err); 
-						});
-					}
-				}
+				onReaction();
 				break;
 
 			case "typ":
