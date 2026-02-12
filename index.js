@@ -125,12 +125,12 @@ app.use("/logs.txt", express.static(logPath));
 
 // Start web server
 server.listen(port, () => {
-  console.log(`📡 Web server running at http://localhost:${port}`);
+  console.log(`🎀 Web server running at http://localhost:${port}`);
 });
 
 // Start Goat.js and capture logs
 function startProject() {
-  console.log("[DEBUG] 𝐒𝐭𝐚𝐫𝐭𝐢𝐧𝐠 𝐁𝐨𝐭...");
+  console.log("[DEBUG]🎀 𝐒𝐭𝐚𝐫𝐭𝐢𝐧𝐠 𝐁𝐨𝐭...");
 
   const child = spawn("node", ["Goat.js"], {
     cwd: __dirname,
@@ -139,7 +139,7 @@ function startProject() {
 
   child.stdout.on("data", (data) => {
     const msg = data.toString().trim();
-    console.log("[𝐀𝐫𝐚𝐟𝐚𝐭 𝐒𝐚𝐫𝐝𝐞𝐫]", msg);
+    console.log("[𝐑𝐞𝐧𝐭𝐚𝐫𝐨 𝐀𝐢𝐣𝐨]", msg);
   });
 
   child.stderr.on("data", (data) => {
