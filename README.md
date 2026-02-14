@@ -63,5 +63,5 @@
 ---
 ##
   <!-- Streak -->
-  <img height="200em" src="https://github-readme-streak-stats.herokuapp.com/?user=Dbz-Mahin7x&theme=radical&background=ffb6c10d&ring=ff1493&fire=ff69b4&currStreakLabel=ff1493&border=ff99cc&hide_border=true" />
+  <img height="200em" src="https://github-readme-streak-stats.herokuapp.com/?user=gojo-999x&theme=radical&background=ffb6c10d&ring=ff1493&fire=ff69b4&currStreakLabel=ff1493&border=ff99cc&hide_border=true" />
 </div>
