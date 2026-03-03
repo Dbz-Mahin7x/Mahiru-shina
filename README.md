@@ -1,67 +1,203 @@
-##
-🎀A ɢᴏᴀᴛ-ʙᴏᴛ Rᴇᴘᴏ ᴍᴀᴅᴇ ғᴏʀ ᴜsᴇᴀɢᴇ🍭✨Iᴛ ᴄᴀɴ ʙᴇ ᴜsᴇᴅ ᴛᴏ Mᴀᴋᴇ ᴍᴇssɴɢᴇʀ ʙᴏᴛs🌨️ʀɪɢʜᴛs ᴏᴡɴᴇᴅ Bʏ Mᴀʜɪɴ Aʜᴍᴇᴅ(Rᴇɴᴛᴀʀᴏ Aɪᴊᴏ)🦋Mᴀʏ Aʟʟᴀʜ ʙʟᴇss Yᴏᴜ🌌🍓
-
-## 💖 **𝓐𝓫𝓸𝓾𝓽 𝓜𝓮** 🍡
-
 <div align="center">
-  <div style="background: linear-gradient(45deg, #ffb6c1, #ffccf9, #ccf2ff); padding: 25px; border-radius: 25px; border: 5px double #ff69b4; margin: 20px;">
-    
-<table>
-  <tr>
-    <td width="50%">
-      <div style="background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(255,105,180,0.3);">
-        <h3 style="color: #ff1493; text-align: center;">🌸 𝓜𝔂 𝓓𝓮𝓽𝓪𝓲𝓵𝓼 🌸</h3>
-        <p>🎀 <b>𝐍𝐚𝐦𝐞:</b> 𝐌𝐚𝐡𝐢𝐧 𝐀𝐡𝐦𝐞𝐝 (まひん)</p>
-        <p>🍓 <b>𝐀𝐠𝐞:</b> 16 𝐘𝐞𝐚𝐫 </p>
-        <p>🏡 <b>𝐅𝐫𝐨𝐦:</b> 𝐓𝐡𝐞 𝐅𝐮𝐭𝐮𝐫𝐞 </p>
-        <p>💝 <b>𝐒𝐭𝐚𝐭𝐮𝐬:</b> 𝐈 𝐌𝐢𝐬𝐬 𝐇𝐞𝐫 💔</p>
-        <p>🎵 <b>𝐓𝐡𝐞𝐦𝐞 𝐒𝐨𝐧𝐠:</b> 𝐋𝐞𝐭 𝐇𝐞𝐫 𝐆𝐨 🎀</p>
-      </div>
-    </td>
-    <td width="50%">
-      <div style="background: white; padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(255,105,180,0.3);">
-        <h3 style="color: #ff1493; text-align: center;">✨ 𝓜𝔂 𝓟𝓪𝓼𝓼𝓲𝓸𝓷𝓼 ✨</h3>
-        <p>💻 <b>𝐂𝐨𝐝𝐞:</b> 𝐉𝐬 𝐀𝐧𝐝 𝐋𝐨𝐯𝐞 </p>
-        <p>🎨 <b>𝐃𝐞𝐬𝐢𝐠𝐧:</b> 𝐊𝐚𝐰𝐚𝐢𝐢 𝐔𝐈/𝐔𝐗</p>
-        <p>🤖 <b>𝐁𝐨𝐭:</b> 🫧🪼𝓜𝓪𝓱𝓲𝓻𝓾🎀𝓢𝓱𝓲𝓷𝓪🩷🪽🐾 </p>
-        <p>🍜 <b>𝐅𝐨𝐨𝐝:</b> Ramen + Bubble Tea</p>
-        <p>🎮 <b> 𝐆𝐚𝐦𝐞 :</b> 𝐅𝐫𝐞𝐞 𝐅𝐢𝐫𝐞 </p>
-      </div>
-    </td>
-  </tr>
-</table>
 
-  </div>
+🎀 𝐌𝐚𝐡𝐢𝐫𝐮 𝐒𝐡𝐢𝐧𝐚 🫧🪼
+
+A GOAT-Bot Messenger Platform 🍭✨
+
+Made with 💖 by Mahin Ahmed (Rentaro Aijo)
+
+https://img.shields.io/github/followers/Dbz-Mahin7x?style=social
+https://img.shields.io/github/stars/Dbz-Mahin7x/Mahiru-shina?style=social
+https://img.shields.io/github/forks/Dbz-Mahin7x/Mahiru-shina?style=social
+
+https://img.shields.io/badge/Node.js-18.x-339933?logo=node.js&logoColor=white
+https://img.shields.io/badge/License-MIT-blue.svg
+https://img.shields.io/github/last-commit/Dbz-Mahin7x/Mahiru-shina
+
+✨ A powerful, feature-rich, and easy-to-use bot repo for creating Messenger bots. ✨
+
+🌟 View Demo •
+📚 Documentation •
+🚀 Installation Guide •
+💬 Support
+
 </div>
 
 ---
 
-## 🎨 **𝓣𝓮𝓬𝓱 𝓢𝓽𝓪𝓬𝓴** 🛠️
+💖 About The Project
 
-<div align="center">
-  
-  <!-- Tech Icons with Animation -->
-  <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; padding: 20px; background: #fff0f5; border-radius: 25px; border: 3px dashed #ff99cc;">
-    <img src="https://img.shields.io/badge/JavaScript-FFB6C1?style=for-the-badge&logo=javascript&logoColor=black" />
-    <img src="https://img.shields.io/badge/Node.js-FF99CC?style=for-the-badge&logo=nodedotjs&logoColor=white" />
-    <img src="https://img.shields.io/badge/React-FF69B4?style=for-the-badge&logo=react&logoColor=white" />
-    <img src="https://img.shields.io/badge/TypeScript-FF1493?style=for-the-badge&logo=typescript&logoColor=white" />
-    <img src="https://img.shields.io/badge/MongoDB-FFB6C1?style=for-the-badge&logo=mongodb&logoColor=green" />
-    <img src="https://img.shields.io/badge/Git-FF99CC?style=for-the-badge&logo=git&logoColor=white" />
-    <img src="https://img.shields.io/badge/VSCode-FF69B4?style=for-the-badge&logo=visualstudiocode&logoColor=white" />
-    <img src="https://img.shields.io/badge/HTML5-FF1493?style=for-the-badge&logo=html5&logoColor=white" />
-    <img src="https://img.shields.io/badge/CSS3-FFB6C1?style=for-the-badge&logo=css3&logoColor=white" />
-    <img src="https://img.shields.io/badge/Tailwind-FF99CC?style=for-the-badge&logo=tailwindcss&logoColor=white" />
-  </div>
+🎀 A ɢᴏᴀᴛ-ʙᴏᴛ Rᴇᴘᴏ ᴍᴀᴅᴇ ғᴏʀ ᴜsᴇᴀɢᴇ. Iᴛ ᴄᴀɴ ʙᴇ ᴜsᴇᴅ ᴛᴏ ᴍᴀᴋᴇ ᴍᴇssᴇɴɢᴇʀ ʙᴏᴛs. 🌨️
 
-## 🛠️ My Tech Stack
+Mahiru Shina is a continuation of the legacy of GOAT-Bot, redesigned and enhanced specifically for the Messenger platform. Whether you're looking to automate, moderate, entertain, or just experiment, this bot provides a solid, customizable foundation.
 
-<p align="center">
-  <img src="https://skillicons.dev/icons?i=js,ts,nodejs,php,html,css,react,mongodb,mysql,git,bash,vscode,linux" />
-</p>
+🎯 Project Goals:
+
+· Provide a stable and feature-packed Messenger bot framework.
+· Make it easy for developers of all levels to create and deploy their own bots.
+· Maintain a cute, kawaii aesthetic while delivering powerful functionality.
 
 ---
-##
-  <!-- Streak -->
-  <img height="200em" src="https://github-readme-streak-stats.herokuapp.com/?user=Dbz-Mahin7x&theme=radical&background=ffb6c10d&ring=ff1493&fire=ff69b4&currStreakLabel=ff1493&border=ff99cc&hide_border=true" />
+
+✨ Key Features
+
+<table>
+<tr>
+<td width="50%">
+
+🛠️ Core Features
+
+· Modular Command System: Easy to add, remove, or disable commands.
+· Multi-Language Support: Reach a global audience.
+· Customizable Configurations: Tailor the bot to your server's needs.
+· Robust Database Integration: Uses MongoDB/MySQL for data persistence.
+· Advanced Logger: Keep track of everything your bot does.
+
+</td>
+<td width="50%">
+
+🎨 Fun & Engagement
+
+· Economy System: Points, daily rewards, shops, and more.
+· Entertainment Commands: Games, quizzes, and interactive modules.
+· Kawaii UI/UX: A design philosophy that makes interaction delightful.
+· Auto-moderator: Keep your groups clean automatically.
+
+</td>
+</tr>
+</table>
+
+---
+
+🛠️ Tech Stack
+
+This project is built with a focus on performance and developer experience.
+
+<div align="center">
+
+Category Technology
+Runtime Node.js (v18+)
+Core Language JavaScript (ES6+)
+Database MongoDB, MySQL (via database/)
+Messenger API Custom fb-chat-api integration
+Logging Custom Logger (logger/)
+Dashboard Lightweight web interface (dashboard/)
+
+</div>
+
+---
+
+🚀 Getting Started
+
+Follow these simple steps to get your own instance of Mahiru Shina up and running.
+
+📋 Prerequisites
+
+· Node.js: Version 18 or higher (Download)
+· Git: For cloning the repository (Download)
+· A Facebook Account: For the bot to use.
+· Database: MongoDB (local or cloud like MongoDB Atlas) or MySQL.
+
+⚙️ Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Dbz-Mahin7x/Mahiru-shina.git
+   cd Mahiru-shina
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+   (This will install all necessary packages listed in package.json)
+3. Configure the bot:
+   · Rename config.dev.json to config.json (or just edit the existing config.json).
+   · Fill in your database credentials, bot settings, and other required fields.
+   · Crucial: Add your Facebook app state or credentials in the designated files (account.txt or account.dev.txt).
+4. Start the bot:
+   ```bash
+   npm start
+   ```
+   Or for development with auto-reload:
+   ```bash
+   node dev.js
+   ```
+
+For a more detailed, step-by-step guide, please refer to the STEP_INSTALL.md file.
+
+---
+
+📁 Project Structure
+
+A quick look at the main folders and files:
+
+```
+Mahiru-shina/
+├── bot/                # Core bot commands and handlers
+├── dashboard/          # Web dashboard files
+├── database/           # Database connection and models
+├── fb-chat-api/        # Custom Messenger API integration
+├── func/               # Utility functions
+├── languages/          # Multi-language support files
+├── logger/             # Logging system
+├── scripts/            # Helper scripts (like fork.js)
+├── .github/            # GitHub workflows
+├── config.json         # Main configuration file
+├── index.js            # Bot entry point
+├── package.json        # Dependencies and scripts
+└── README.md           # You are here!
+```
+
+---
+
+📚 Documentation & Commands
+
+For a full list of commands and their usage, please check the DOCS.md file.
+
+Highlights include:
+
+· Admin Commands: Ban, kick, promote, settings.
+· User Commands: Help, profile, info.
+· Economy: Daily, work, shop, balance, give.
+· Fun: Memes, trivia, games.
+
+---
+
+🤝 Contributing
+
+Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
+
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
+
+1. Fork the Project
+2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
+3. Commit your Changes (git commit -m 'Add some AmazingFeature')
+4. Push to the Branch (git push origin feature/AmazingFeature)
+5. Open a Pull Request
+
+---
+
+📜 License
+
+Distributed under the MIT License. See LICENSE file for more information.
+
+---
+
+💖 Developer's Note
+
+Hello! I'm Mahin Ahmed (まひん), a 16-year-old developer from the Future. I pour my passion for code, kawaii design, and robotics into projects like this. I hope Mahiru Shina brings joy and utility to your communities! May Allah bless you. 🌌🍓
+
+"Let Her Go" is the vibe.
+
+Connect with me:
+
+· Facebook: Mahin Ahmed (Rentaro Aijo)
+· GitHub: @Dbz-Mahin7x
+
+---
+
+<div align="center">
+  <sub>Built with 💖, 🍜 Ramen, and 🧋 Bubble Tea.</sub>
+  <br>
+  <sub>© 2026 Mahin Ahmed. All rights reserved.</sub>
 </div>
